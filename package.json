@@ -1,0 +1,25 @@
+{
+    "name": "spotify-clone-api",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node --watch src/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ashif-ali/Spotify-Clone-API.git"
+    },
+    "keywords": [],
+    "author": "Ashif Ali",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ashif-ali/Spotify-Clone-API/issues"
+    },
+    "homepage": "https://github.com/ashif-ali/Spotify-Clone-API#readme",
+    "description": "",
+    "dependencies": {
+        "dotenv": "^17.2.0",
+        "express": "^5.1.0",
+        "mongoose": "^8.16.3"
+    }
+}
