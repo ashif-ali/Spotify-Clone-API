@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema(
     {
@@ -23,7 +24,7 @@ const userSchema = new mongoose.Schema(
                 "https://cdn.pixabay.com/photo/2023/05/02/10/35/avatar-7964945_1280.png",
         },
         isAdmin: {
-            type: String,
+            type: boolean,
             default: false,
         },
         likedSongs: [
@@ -55,6 +56,22 @@ const userSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+// Hash password before saving
+userSchema.pre("save", async function (next) {
+    try {
+        // Only hash the password if it is modified
+        if (!this.isModified("password")) {
+            return next();
+        }
+        // Generate salt and hash the password
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error); // Pass errors to Mongoose
+    }
+});
 
 const User = mongoose.model("User", userSchema);
 
