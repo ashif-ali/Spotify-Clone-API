@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
                 "https://cdn.pixabay.com/photo/2023/05/02/10/35/avatar-7964945_1280.png",
         },
         isAdmin: {
-            type: boolean,
+            type: Boolean,
             default: false,
         },
         likedSongs: [
@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+
+userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
 
 // Hash password before saving
 userSchema.pre("save", async function (next) {
