@@ -128,10 +128,32 @@ const loginUser = async (req, res) => {
 
 //! update user profile
 
-const getUserProfile = async function (req, res) {
-    console.log("profile controller", req.user);
-};
+const getUserProfile = async (req, res) => {
+    try {
+        // Check if req.user exists
+        if (!req.user || !req.user._id) {
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ message: "Unauthorized, user not available" });
+        }
 
+        // Find the user, exclude password and _id
+        const user = await User.findById(req.user._id).select("-password -_id");
+
+        if (user) {
+            res.status(StatusCodes.OK).json(user);
+        } else {
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ message: "User not found" });
+        }
+    } catch (error) {
+        console.error(error);
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ message: "Server error" });
+    }
+};
 //! toggle like song
 //! toggle follow artist
 //! toggle follow playlist

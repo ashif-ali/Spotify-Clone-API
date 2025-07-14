@@ -3,7 +3,7 @@ const User = require("../models/User");
 const { StatusCodes } = require("http-status-codes");
 
 // Middleware to protect routes - verify JWT token and set req.user
-const protect = async (req, res, next) => {
+const protect = async function (req, res, next) {
     let token;
     if (
         req.headers.authorization &&
