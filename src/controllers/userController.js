@@ -2,6 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { StatusCodes } = require("http-status-codes");
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
+const uploadToCloudinary = require("../utils/cloudinaryUpload");
 
 /**
  * @desc - register a new user
@@ -126,8 +127,6 @@ const loginUser = async (req, res) => {
 
 //* Get user profile
 
-//! update user profile
-
 const getUserProfile = async (req, res) => {
     try {
         // Check if req.user exists
@@ -154,6 +153,42 @@ const getUserProfile = async (req, res) => {
             .json({ message: "Server error" });
     }
 };
+
+//! update user profile
+const updateUserProfile = asyncHandler(async function (req, res) {
+    console.log("update profile");
+    const user = await User.findById(req.user._id);
+    const { name, email, password } = req.body;
+    if (user) {
+        user.name = name || user.name;
+        user.email = email || user.email;
+
+        //check if user is updating the password field
+        if (password) {
+            user.password = password;
+        }
+        //Upload profile picture if provided
+        if (req.file) {
+            const result = await uploadToCloudinary(
+                req.file.path,
+                "spotify/users"
+            );
+            user.profilePicture = result.secure_url;
+        }
+        const updatedUser = await user.save();
+        res.status(StatusCodes.OK).json({
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            profilePicture: updatedUser.profilePicture,
+            isAdmin: updatedUser.isAdmin,
+        });
+    } else {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("User Not Found");
+    }
+});
+
 //! toggle like song
 //! toggle follow artist
 //! toggle follow playlist
@@ -163,4 +198,5 @@ module.exports = {
     registerUser,
     loginUser,
     getUserProfile,
+    updateUserProfile,
 };
