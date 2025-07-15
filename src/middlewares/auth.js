@@ -5,6 +5,8 @@ const { StatusCodes } = require("http-status-codes");
 // Middleware to protect routes - verify JWT token and set req.user
 const protect = async function (req, res, next) {
     let token;
+    //Check if user is attaching token to the header
+    //Check if token exists in Authorization header
     if (
         req.headers.authorization &&
         req.headers.authorization.startsWith("Bearer")
