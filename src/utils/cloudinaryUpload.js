@@ -1,7 +1,7 @@
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs").promises; // Use promises for async file operations
 
-const uploadtoCloudinary = async (filePath, folder) => {
+const uploadToCloudinary = async (filePath, folder) => {
     try {
         // Validate inputs
         if (!filePath || typeof filePath !== "string") {
@@ -58,4 +58,4 @@ const uploadtoCloudinary = async (filePath, folder) => {
     }
 };
 
-module.exports = uploadtoCloudinary;
+module.exports = uploadToCloudinary;
