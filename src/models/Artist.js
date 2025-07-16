@@ -5,7 +5,7 @@ const artistSchema = new mongoose.Schema(
         name: {
             type: String,
             required: [true, "Artist name is required"],
-            trim: True,
+            trim: true,
         },
         bio: {
             type: String,
@@ -46,7 +46,7 @@ const artistSchema = new mongoose.Schema(
             },
         ],
         isVerified: {
-            type: boolean,
+            type: Boolean,
             default: false,
         },
     },
