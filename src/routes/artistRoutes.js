@@ -5,6 +5,7 @@ const {
     getAllArtists,
     getArtistsById,
     updateArtist,
+    deleteArtist,
 } = require("../controllers/artistController");
 const upload = require("../middlewares/upload");
 
@@ -24,5 +25,7 @@ artistRouter.put(
     upload.single("image"),
     updateArtist
 );
+
+artistRouter.delete("/:id", protect, isAdmin, deleteArtist);
 
 module.exports = artistRouter;
