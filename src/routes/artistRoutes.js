@@ -7,6 +7,7 @@ const {
     updateArtist,
     deleteArtist,
     getTopArtists,
+    getArtistTopSongs,
 } = require("../controllers/artistController");
 const upload = require("../middlewares/upload");
 
@@ -15,6 +16,7 @@ const artistRouter = express.Router();
 //Public routes
 artistRouter.get("/", getAllArtists);
 artistRouter.get("/top", getTopArtists);
+artistRouter.get("/:id/top-songs", getArtistTopSongs);
 artistRouter.get("/:id", getArtistsById);
 
 //Admin routes
