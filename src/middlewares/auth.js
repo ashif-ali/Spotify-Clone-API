@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { StatusCodes } = require("http-status-codes");
+const asyncHandler = require("express-async-handler");
 
 // Middleware to protect routes - verify JWT token and set req.user
 const protect = async function (req, res, next) {
@@ -35,4 +36,17 @@ const protect = async function (req, res, next) {
     }
 };
 
-module.exports = protect;
+// Middleware to check if user is an admin
+const isAdmin = asyncHandler(async (req, res, next) => {
+    if (req.user && req.user.isAdmin) {
+        next();
+    } else {
+        res.status(StatusCodes.FORBIDDEN);
+        throw new Error("Not authorized as an admin");
+    }
+});
+
+module.exports = {
+    protect,
+    isAdmin,
+};
