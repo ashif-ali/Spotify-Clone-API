@@ -93,4 +93,20 @@ const getAllArtists = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { createArtist, getAllArtists };
+/**
+ *! @desc - Get artist by ID
+ * @route - GET /api/artists/:id
+ * @Access - Public
+ */
+const getArtistsById = asyncHandler(async (req, res) => {
+    //console.log(req.params.id);
+    const artist = await Artist.findById(req.params.id);
+    if (!artist) {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("Artist not found");
+    } else {
+        res.status(StatusCodes.OK).json(artist);
+    }
+});
+
+module.exports = { createArtist, getAllArtists, getArtistsById };
