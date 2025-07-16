@@ -176,10 +176,25 @@ const deleteArtist = asyncHandler(async (req, res) => {
     });
 });
 
+/**
+ * @desc - Get top 10 artists by followers
+ * @route - GET /api/artists/top?limit=10
+ * @Access - Public
+ */
+const getTopArtists = asyncHandler(async (req, res) => {
+    // console.log("get top artists");
+    const { limit } = req.query;
+    const artists = await Artist.find({})
+        .sort({ followers: -1 })
+        .limit(parseInt(limit));
+    res.status(StatusCodes.OK).json(artists);
+});
+
 module.exports = {
     createArtist,
     getAllArtists,
     getArtistsById,
     updateArtist,
     deleteArtist,
+    getTopArtists,
 };
