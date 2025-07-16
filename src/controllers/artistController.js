@@ -109,4 +109,45 @@ const getArtistsById = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { createArtist, getAllArtists, getArtistsById };
+/**
+ * @desc - Update artist details
+ * @route - PUT /api/artists/:id
+ * @Access - Private (Admin)
+ */
+const updateArtist = asyncHandler(async (req, res) => {
+    const { name, bio, genre, isVerified } = req.body;
+
+    // Validate request body
+    if (!name || !bio || !genre) {
+        res.status(StatusCodes.BAD_REQUEST);
+        throw new Error("Name, bio, and genres are required");
+    }
+
+    const artist = await Artist.findById(req.params.id);
+    if (!artist) {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("Artist not found");
+    }
+
+    // Update artist details
+    artist.name = name || artist.name;
+    artist.bio = bio || artist.bio;
+    artist.genre = genre.split(",").map((g) => g.trim()) || artist.genre;
+    artist.isVerified =
+        isVerified !== undefined ? isVerified === true : artist.isVerified;
+
+    // update image if provided
+    if (req.file) {
+        const result = await uploadToCloudinary(
+            req.file.path,
+            "spotify/artists"
+        );
+        artist.image = result.secure_url;
+    }
+
+    //reSave
+    const updatedArtist = await artist.save();
+    res.status(StatusCodes.OK).json(updatedArtist);
+});
+
+module.exports = { createArtist, getAllArtists, getArtistsById, updateArtist };
