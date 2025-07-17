@@ -26,7 +26,7 @@ albumRouter.post(
     isAdmin,
     upload.single("coverImage"),
     createAlbum
-); //its get in vid
+);
 
 albumRouter.put(
     "/:id",
