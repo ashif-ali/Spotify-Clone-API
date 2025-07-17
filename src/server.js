@@ -5,6 +5,7 @@ const connectDB = require("./config/dbConnect");
 const userRouter = require("./routes/userRoutes");
 const { StatusCodes } = require("http-status-codes");
 const artistRouter = require("./routes/artistRoutes");
+const albumRouter = require("./routes/albumRoutes");
 
 //Load environment variables
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 //Routes
 app.use("/api/users", userRouter);
 app.use("/api/artists", artistRouter);
+app.use("/api/albums", albumRouter);
 
 //Handling error using middleware
 app.use((req, res, next) => {
