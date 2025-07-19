@@ -86,7 +86,53 @@ const createAlbum = asyncHandler(async (req, res) => {
     });
 });
 
-const getAlbums = asyncHandler(async (req, res) => {});
+
+
+/**
+ * @desc - Get all albums with filtering and pagination
+ * @route - GET /api/albums?genre=pop&artist=2342141343124423&search=pink&page=1&limit=10
+ * @Access - Public
+ */
+const getAlbums = asyncHandler(async (req, res) => {
+    const { genre, artist, search, page = 1, limit = 10 } = req.query;
+
+    //Build filter object
+    const filter = {};
+    if (genre) {
+       filter.genre = { $regex: `^${genre}$`, $options: 'i' }; // Case-insensitive match
+    }
+    if (artist) {
+        filter.artist = artist;
+    }
+    if (search) {
+        filter.$or = [
+            { title: { $regex: search, $options: "i" } },
+            {genre: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+        ];
+    }
+
+    //Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    //Count total albums with filter
+    const totalAlbums = await Album.countDocuments(filter);
+
+    //
+    const albums = await Album.find(filter)
+        .sort({ releasedDate: -1 })
+        .limit(limit)
+        .skip(skip);
+
+    res.status(StatusCodes.OK).json({
+        message: "Albums fetched successfully",
+        albums,
+        page: parseInt(page),
+        totalPages: Math.ceil(totalAlbums / parseInt(limit)),
+        totalAlbums,
+        
+    });
+});
 
 const getAlbumById = asyncHandler(async (req, res) => {});
 
