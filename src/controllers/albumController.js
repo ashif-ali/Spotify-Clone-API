@@ -122,7 +122,7 @@ const getAlbums = asyncHandler(async (req, res) => {
     const albums = await Album.find(filter)
         .sort({ releasedDate: -1 })
         .limit(limit)
-        .skip(skip);
+        .skip(skip).populate("artist", "name image")
 
     res.status(StatusCodes.OK).json({
         message: "Albums fetched successfully",
