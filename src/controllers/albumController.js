@@ -187,7 +187,38 @@ const updateAlbum = asyncHandler(async (req, res) => {
     });
 });
 
-const deleteAlbum = asyncHandler(async (req, res) => {});
+/**
+ * @desc - Delete an album
+ * @route - DELETE /api/albums/:id
+ * @Access - Private/admin
+ */
+const deleteAlbum = asyncHandler(async (req, res) => {
+    const album = await Album.findById(req.params.id);
+    if (!album) {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("Album not found");
+    }
+
+    //Remove album from artist's albums
+    const artist = await Artist.findById(album.artist);
+    if (artist) {
+        artist.albums = artist.albums.filter(
+            (a) => a.toString() !== album._id.toString()
+        );
+        await artist.save();
+    }
+// update songs to remove album reference
+    await Song.updateMany(
+        { album: album._id },
+        { $unset: { album: 1 } }
+    );
+
+    //Delete album
+    await album.deleteOne();
+    res.status(StatusCodes.OK).json({
+        message: "Album deleted successfully",
+    });
+});
 
 const addSongsToAlbum = asyncHandler(async (req, res) => {});
 
