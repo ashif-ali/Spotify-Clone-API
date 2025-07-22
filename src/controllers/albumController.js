@@ -153,7 +153,39 @@ const getAlbumById = asyncHandler(async (req, res) => {
     }
 });
 
-const updateAlbum = asyncHandler(async (req, res) => {});
+
+/**
+ * @desc - Update an album
+ * @route - PUT /api/albums/:id
+ * @Access - Private/admin
+ */
+const updateAlbum = asyncHandler(async (req, res) => {
+    const {title, releasedDate, genre, description, isExplicit} = req.body;
+    const album = await Album.findById(req.params.id);
+    if (!album) {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("Album not found");
+    }
+
+    //update album details
+    album.title = title || album.title;
+    album.releasedDate = releasedDate || album.releasedDate;
+    album.genre = genre || album.genre;
+    album.description = description || album.description;
+    album.isExplicit = isExplicit !== undefined ? isExplicit === true : album.isExplicit;
+
+    //update image if provided
+    if (req.file) {
+        const result = await uploadToCloudinary(req.file.path, "spotify/albums");
+        album.coverImage = result.secure_url;
+    }
+    //resave album
+    const updatedAlbum = await album.save();
+    res.status(StatusCodes.OK).json({
+        message: "Album updated successfully",
+        album: updatedAlbum,
+    });
+});
 
 const deleteAlbum = asyncHandler(async (req, res) => {});
 
