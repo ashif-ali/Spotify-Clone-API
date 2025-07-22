@@ -134,7 +134,24 @@ const getAlbums = asyncHandler(async (req, res) => {
     });
 });
 
-const getAlbumById = asyncHandler(async (req, res) => {});
+/**
+ * @desc - Get album by ID
+ * @route - GET /api/albums/:id
+ * @Access - Public
+ */
+
+const getAlbumById = asyncHandler(async (req, res) => {
+    const album = await Album.findById(req.params.id).populate("artist", "name image bio");
+    if(album) {
+        res.status(StatusCodes.OK).json({
+            message: "Album fetched successfully",
+            album,
+        });
+    }else {
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error("Album not found");
+    }
+});
 
 const updateAlbum = asyncHandler(async (req, res) => {});
 
