@@ -78,11 +78,43 @@ const createSong = asyncHandler(async (req, res) => {
 
 /**
  * @desc - Get all songs with filtering and pagination
- * @route - GET /api/songs
+ * @route - GET /api/songs?genre=Rock&artist=3939kkd09384&search=love&page=1&limit=10
  * @Access - Public
  */
 
-const getSongs = asyncHandler(async (req, res) => {});
+const getSongs = asyncHandler(async (req, res) => {
+    const {genre, artist, search, page = 1, limit = 10} = req.query;
+    //Build filter object
+    const filter = {};
+    if (genre) filter.genre = genre;
+    if (artist) filter.artist = artist;
+    if(search) {
+        filter.$or = [
+            { title: { $regex: search, $options: "i" } },
+            { genre: { $regex: search, $options: "i" }},
+            { description: { $regex: search, $options: "i" }},
+        ];
+    }
+    // Count total songs with filter
+    const count = await Song.countDocuments(filter);
+    // Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    // get Songs
+    const songs = await Song.find(filter)
+        .populate("artist", "name image")
+        .populate("album", "name coverImage")
+        .populate("featuredArtist", "name")
+        .skip(skip)
+        .limit(parseInt(limit))
+        .sort({ releaseDate: -1 });
+    res.status(StatusCodes.OK).json({
+        message: "Songs fetched successfully",
+        songs,
+        page: parseInt(page),
+        pages: Math.ceil(count / limit),
+        totalAlbums: count
+    });
+});
 
 /**
  * @desc - Get a song by ID

@@ -14,7 +14,7 @@ const {
 // configure multer to handler multiple file types
 const songUpload = upload.fields([
     { name: "audio", maxCount: 1 },
-    { name: "cover", maxCount: 1 }
+    { name: "cover", maxCount: 1} 
 ]);
 
 //Public routes
